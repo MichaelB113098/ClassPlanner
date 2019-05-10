@@ -38,6 +38,7 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.unavailableButton = new System.Windows.Forms.Button();
             this.classTableBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.label2 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.classTableBindingSource)).BeginInit();
@@ -128,11 +129,21 @@
             this.unavailableButton.UseVisualStyleBackColor = true;
             this.unavailableButton.Click += new System.EventHandler(this.UnavailableButton_Click);
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(640, 429);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(35, 13);
+            this.label2.TabIndex = 8;
+            this.label2.Text = "label2";
+            // 
             // ClassManager
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.unavailableButton);
             this.Controls.Add(this.ImportButton);
             this.Controls.Add(this.dataGridView2);
@@ -162,6 +173,7 @@
         private System.Windows.Forms.Button ImportButton;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.Button unavailableButton;
+        private System.Windows.Forms.Label label2;
     }
 }
 

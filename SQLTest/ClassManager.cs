@@ -25,7 +25,7 @@ namespace SQLTest
             unavailableForm = new UnavailableClasses(this);
             InitializeComponent();
             SqlConnection connection = new SqlConnection();
-            using (connection) ///Create database if it doesn't exist
+            using (connection) //Create database if it doesn't exist
             {
                 connection.ConnectionString =
                     @"Data Source=localhost;Initial Catalog=master;Integrated Security=True";
@@ -62,7 +62,7 @@ namespace SQLTest
             }
         }
 
-        public void UpdateTable() ///Updates dataGridView tables to database values
+        public void UpdateTable() //Updates dataGridView tables to database values
         {
             SqlConnection connection = new SqlConnection();
             using (connection)
@@ -99,9 +99,10 @@ namespace SQLTest
 
             gpa = totalGradePoint / creditHours;
             label1.Text = "Average GPA: " + Math.Round(gpa,2);
+            label2.Text = "Credit Hours: " + creditHours;
 
         }
-        private void AddDialogButton_Click(object sender, EventArgs e) ///Prompts user to add class from available to taken
+        private void AddDialogButton_Click(object sender, EventArgs e) //Prompts user to add class from available to taken
         {
             try
             {
@@ -119,7 +120,7 @@ namespace SQLTest
             }
         }
 
-        public void completeClass(double grade, string className) ///Completes class with given name and assigns given grade
+        public void completeClass(double grade, string className) //Completes class with given name and assigns given grade
         {
             SqlConnection connection = new SqlConnection();
             using (connection)
@@ -138,7 +139,7 @@ namespace SQLTest
             this.Enabled = true;
         }
 
-        private void RemoveButton_Click(object sender, EventArgs e) ///Removes class from taken grid to available grid
+        private void RemoveButton_Click(object sender, EventArgs e) //Removes class from taken grid to available grid
         {
             using (SqlConnection connection = new SqlConnection())
             {
@@ -169,7 +170,7 @@ namespace SQLTest
             UpdateTable();
         }
 
-        private void ImportButton_Click(object sender, EventArgs e) ///Imports new class list from a text file
+        private void ImportButton_Click(object sender, EventArgs e) //Imports new class list from a text file
         {
             try
             {
@@ -234,12 +235,12 @@ namespace SQLTest
             }
             catch (Exception f)
             {
-                MessageBox.Show("Error writing text file to database, make sure the format is correct(ClassName CreditHours or ClassName CreditHours PreReq", "Error", MessageBoxButtons.OK,
+                MessageBox.Show(f.ToString(), "Error", MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
         }
 
-        private void UnavailableButton_Click(object sender, EventArgs e) ///List classes not available to take
+        private void UnavailableButton_Click(object sender, EventArgs e) //List classes not available to take
         {
             if (unavailableForm.Created) unavailableForm.Close();
             unavailableForm = new UnavailableClasses(this);
