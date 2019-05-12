@@ -1,6 +1,8 @@
 # ClassPlanner
 C# Application that manages a student's classes and information using a local SQL database
+
 Main file: ClassManager.cs
+
 Additional forms: UnavailableClasses.cs and CompleteClass.cs
 
 I wanted to practice working with a SQL database using C# and Visual Studio. I wanted to create an alternative to my university's degree
