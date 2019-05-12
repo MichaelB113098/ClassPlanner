@@ -19,6 +19,7 @@ namespace SQLTest
         private double totalGradePoint;
         private int creditHours;
         private double gpa;
+	//Sql Connection Variable
 	private SqlConnection connection;
 	//Form that shows classes prereqs haven't been met for
         private Form unavailableForm;
@@ -27,12 +28,15 @@ namespace SQLTest
         {
             unavailableForm = new UnavailableClasses(this);
             InitializeComponent();
+	    //Set Connection to new SQLConnection, set string to local SQL master database
             connection = new SqlConnection();
 	    connection.ConnectionString =
                     @"Data Source=localhost;Initial Catalog=master;Integrated Security=True";
+		    
             using (connection) //Create database if it doesn't exist
             {
                 connection.Open();
+		//SQL code to create table if it doesnt exist
                 using (SqlCommand updateCommand = new SqlCommand(@"IF  NOT EXISTS (SELECT * FROM sys.objects 
                                         WHERE object_id = OBJECT_ID(N'[dbo].[ClassTable]') AND type in (N'U'))
                                         BEGIN USE [master]
@@ -70,6 +74,7 @@ namespace SQLTest
             using (connection)
             {
                 connection.Open();
+		//Completed classes
                 using (SqlCommand command = new SqlCommand("SELECT ClassName, GradePoint, CreditHours FROM ClassTable WHERE Completed = '1'", connection))
                 {
                     SqlDataAdapter da = new SqlDataAdapter(command);
@@ -78,6 +83,7 @@ namespace SQLTest
                     dataGridView1.DataSource = new BindingSource(table, null);
 
                 }
+		//Uncompleted classes where prereqs have been completed
                 using (SqlCommand command = new SqlCommand("SELECT ClassName, CreditHours, PreReq FROM ClassTable WHERE Completed = '0' AND (PreReq is null OR PreReq IN (SELECT ClassName FROM ClassTable WHERE Completed = '1'))", connection))
                 {
                     SqlDataAdapter da = new SqlDataAdapter(command);
@@ -88,7 +94,7 @@ namespace SQLTest
                 }
 
             }
-
+	    ///Calculate GPA and credit hours, display it under table
             totalGradePoint = 0;
             creditHours = 0;
             for (int i = 0; i < dataGridView1.RowCount; i++)
@@ -102,6 +108,7 @@ namespace SQLTest
             label2.Text = "Credit Hours: " + creditHours;
 
         }
+	//Dialog to complete class, dialog simply asks what grade the user recieved, CompleteClass form then calls the completeClass method
         private void AddDialogButton_Click(object sender, EventArgs e) //Prompts user to add class from available to taken
         {
             try
@@ -188,6 +195,7 @@ namespace SQLTest
 
                             
                         }
+			    // insert all classes into fresh table, using parameters to avoid injection
                             using (connection)
                             {
                                 connection.Open();
@@ -232,6 +240,7 @@ namespace SQLTest
             }
         }
 
+	//Open unavailable class form
         private void UnavailableButton_Click(object sender, EventArgs e) //List classes not available to take
         {
             if (unavailableForm.Created) unavailableForm.Close();
