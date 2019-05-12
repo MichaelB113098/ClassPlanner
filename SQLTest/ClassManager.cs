@@ -15,20 +15,23 @@ namespace SQLTest
 {
     public partial class ClassManager : Form
     {
+    	//These variables are used to calculate GPA to be displayed in the application
         private double totalGradePoint;
         private int creditHours;
         private double gpa;
+	private SqlConnection connection;
+	//Form that shows classes prereqs haven't been met for
         private Form unavailableForm;
 
         public ClassManager()
         {
             unavailableForm = new UnavailableClasses(this);
             InitializeComponent();
-            SqlConnection connection = new SqlConnection();
+            connection = new SqlConnection();
+	    connection.ConnectionString =
+                    @"Data Source=localhost;Initial Catalog=master;Integrated Security=True";
             using (connection) //Create database if it doesn't exist
             {
-                connection.ConnectionString =
-                    @"Data Source=localhost;Initial Catalog=master;Integrated Security=True";
                 connection.Open();
                 using (SqlCommand updateCommand = new SqlCommand(@"IF  NOT EXISTS (SELECT * FROM sys.objects 
                                         WHERE object_id = OBJECT_ID(N'[dbo].[ClassTable]') AND type in (N'U'))
@@ -64,11 +67,8 @@ namespace SQLTest
 
         public void UpdateTable() //Updates dataGridView tables to database values
         {
-            SqlConnection connection = new SqlConnection();
             using (connection)
             {
-                connection.ConnectionString =
-                    @"Data Source=localhost;Initial Catalog=master;Integrated Security=True";
                 connection.Open();
                 using (SqlCommand command = new SqlCommand("SELECT ClassName, GradePoint, CreditHours FROM ClassTable WHERE Completed = '1'", connection))
                 {
@@ -122,11 +122,8 @@ namespace SQLTest
 
         public void completeClass(double grade, string className) //Completes class with given name and assigns given grade
         {
-            SqlConnection connection = new SqlConnection();
             using (connection)
             {
-                connection.ConnectionString =
-                    @"Data Source=localhost;Initial Catalog=master;Integrated Security=True";
                 connection.Open();
                 using (SqlCommand updateCommand = new SqlCommand("UPDATE ClassTable SET GradePoint = '" + grade + "', Completed = '1' WHERE Classname = '"+ className +"'", connection))
                 {
@@ -141,10 +138,8 @@ namespace SQLTest
 
         private void RemoveButton_Click(object sender, EventArgs e) //Removes class from taken grid to available grid
         {
-            using (SqlConnection connection = new SqlConnection())
+            using (connection)
             {
-                connection.ConnectionString =
-                    @"Data Source=localhost;Initial Catalog=master;Integrated Security=True";
                 connection.Open();
                 try
                 {
@@ -193,11 +188,8 @@ namespace SQLTest
 
                             
                         }
-                        var connection = new SqlConnection();
                             using (connection)
                             {
-                                connection.ConnectionString =
-                                    "Data Source=localhost;Initial Catalog=master;Integrated Security=True";
                                 connection.Open();
                                 using (var deleteCommand =
                                     new SqlCommand(
