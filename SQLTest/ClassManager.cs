@@ -15,11 +15,8 @@ namespace SQLTest
         private int _creditHours;
 
         private double _gpa;
-<<<<<<< HEAD
-=======
 	//Sql Connection Variable
 	private readonly SqlConnection _connection;
->>>>>>> 03008c8713af670335e7d6b915cc06400ecad74f
 
         //These variables are used to calculate GPA to be displayed in the application
         private double _totalGradePoint;
