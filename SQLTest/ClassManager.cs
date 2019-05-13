@@ -16,6 +16,10 @@ namespace SQLTest
 
         private double _gpa;
 
+	//Sql Connection Variable
+	private readonly SqlConnection _connection;
+
+
         //These variables are used to calculate GPA to be displayed in the application
         private double _totalGradePoint;
 
