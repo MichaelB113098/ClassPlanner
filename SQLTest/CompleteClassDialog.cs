@@ -12,8 +12,8 @@ namespace SQLTest
 {
     public partial class CompleteClassDialog : Form
     {
-        private ClassManager parent;
-        private string classname;
+        private readonly ClassManager parent;
+        private readonly string classname;
         public CompleteClassDialog(string className, ClassManager parent)
         {
             InitializeComponent();
@@ -22,7 +22,7 @@ namespace SQLTest
             this.classname = className;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void Button1_Click(object sender, EventArgs e)
         {
             double gradePoint = 0;
             switch (comboBox1.Text)
@@ -42,10 +42,10 @@ namespace SQLTest
                 case "F":
                     gradePoint = 0;
                     break;
-                case "":
+                default:
                     return;
             }
-            parent.completeClass(gradePoint, classname);
+            parent.CompleteClass(gradePoint, classname);
             parent.UpdateTable();
             this.Close();
 

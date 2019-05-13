@@ -13,10 +13,10 @@ namespace SQLTest
 {
     public partial class UnavailableClasses : Form
     {
-        private ClassManager parent;
+        private ClassManager _parent;
         public UnavailableClasses(ClassManager parent)
         {
-            this.parent = parent;
+            this._parent = parent;
             InitializeComponent();
         }
 
@@ -28,10 +28,10 @@ namespace SQLTest
                 connection.ConnectionString =
                     @"Data Source=localhost;Initial Catalog=master;Integrated Security=True";
                 connection.Open();
-                using (SqlCommand command = new SqlCommand("SELECT ClassName, CreditHours, PreReq FROM ClassTable WHERE Completed = '0' AND PreReq IN (SELECT ClassName FROM ClassTable WHERE Completed = '0')", connection))
+                using (var command = new SqlCommand("SELECT ClassName, CreditHours, PreReq FROM ClassTable WHERE Completed = '0' AND PreReq IN (SELECT ClassName FROM ClassTable WHERE Completed = '0')", connection))
                 {
-                    SqlDataAdapter da = new SqlDataAdapter(command);
-                    DataTable table = new DataTable();
+                    var da = new SqlDataAdapter(command);
+                    var table = new DataTable();
                     da.Fill(table);
                     dataGridView2.DataSource = new BindingSource(table, null);
 
