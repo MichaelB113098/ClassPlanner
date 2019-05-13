@@ -1,25 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SQLTest
 {
     public partial class CompleteClassDialog : Form
     {
-        private readonly ClassManager parent;
         private readonly string classname;
+        private readonly ClassManager parent;
+
         public CompleteClassDialog(string className, ClassManager parent)
         {
             InitializeComponent();
             label1.Text = "Enter grade for " + className;
             this.parent = parent;
-            this.classname = className;
+            classname = className;
         }
 
         private void Button1_Click(object sender, EventArgs e)
@@ -45,17 +39,14 @@ namespace SQLTest
                 default:
                     return;
             }
+
             parent.CompleteClass(gradePoint, classname);
             parent.UpdateTable();
-            this.Close();
-
-
-
+            Close();
         }
 
         private void CompleteClassDialog_Load(object sender, EventArgs e)
         {
-
         }
 
         private void CompleteClassDialog_FormClosed(object sender, FormClosedEventArgs e)

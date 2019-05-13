@@ -1,40 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Data.SqlClient;
+using System.Drawing;
 using System.IO;
-
+using System.Windows.Forms;
 
 namespace SQLTest
 {
     public partial class ClassManager : Form
     {
-    	//These variables are used to calculate GPA to be displayed in the application
-        private double _totalGradePoint;
+        //Sql Connection Variable
+        private readonly SqlConnection _connection;
         private int _creditHours;
-        private double _gpa;
-	    //Sql Connection Variable
-	    private readonly SqlConnection _connection;
 
-        private string ConnectionString = @"Data Source=localhost;Initial Catalog=master;Integrated Security=True";
-	    //Form that shows classes prereqs haven't been met for
+        private double _gpa;
+
+        //These variables are used to calculate GPA to be displayed in the application
+        private double _totalGradePoint;
+
+        //Form that shows classes prereqs haven't been met for
         private Form _unavailableForm;
+
+        private readonly string ConnectionString =
+            @"Data Source=localhost;Initial Catalog=master;Integrated Security=True";
 
         public ClassManager()
         {
             _unavailableForm = new UnavailableClasses(this);
             InitializeComponent();
-	    //Set Connection to new SQLConnection, set string to local SQL master database
+            //Set Connection to new SQLConnection, set string to local SQL master database
             _connection = new SqlConnection();
-            
 
-		    
+
             using (_connection) //Create database if it doesn't exist
             {
                 _connection.ConnectionString = ConnectionString;
@@ -62,13 +60,11 @@ namespace SQLTest
                                         ALTER TABLE [dbo].[ClassTable]  WITH CHECK ADD  CONSTRAINT [FK_ClassTable_ClassTable] FOREIGN KEY([PreReq])
                                         REFERENCES [dbo].[ClassTable] ([ClassName])
 
-                                        ALTER TABLE [dbo].[ClassTable] CHECK CONSTRAINT [FK_ClassTable_ClassTable] END", _connection))
+                                        ALTER TABLE [dbo].[ClassTable] CHECK CONSTRAINT [FK_ClassTable_ClassTable] END",
+                    _connection))
                 {
-
                     updateCommand.ExecuteNonQuery();
                 }
-
-
             }
         }
 
@@ -78,42 +74,48 @@ namespace SQLTest
             {
                 _connection.ConnectionString = ConnectionString;
                 _connection.Open();
-		//Completed classes
-                using (SqlCommand command = new SqlCommand("SELECT ClassName, GradePoint, CreditHours FROM ClassTable WHERE Completed = '1'", _connection))
-                {
-                    SqlDataAdapter da = new SqlDataAdapter(command);
-                    DataTable table = new DataTable();
-                    da.Fill(table);
-                    dataGridView1.DataSource = new BindingSource(table, null);
-
-                }
-                //Uncompleted classes where prereqs have been completed
-                using (var command = new SqlCommand("SELECT ClassName, CreditHours, PreReq FROM ClassTable WHERE Completed = '0' AND (PreReq is null OR PreReq IN (SELECT ClassName FROM ClassTable WHERE Completed = '1'))", _connection))
+                //Completed classes
+                using (var command =
+                    new SqlCommand("SELECT ClassName, GradePoint, CreditHours FROM ClassTable WHERE Completed = '1'",
+                        _connection))
                 {
                     var da = new SqlDataAdapter(command);
                     var table = new DataTable();
-                        da.Fill(table);
-                    dataGridView2.DataSource = new BindingSource(table, null);
-
+                    da.Fill(table);
+                    dataGridView1.DataSource = new BindingSource(table, null);
                 }
 
+                //Uncompleted classes where prereqs have been completed
+                using (var command =
+                    new SqlCommand(
+                        "SELECT ClassName, CreditHours, PreReq FROM ClassTable WHERE Completed = '0' AND (PreReq is null OR PreReq IN (SELECT ClassName FROM ClassTable WHERE Completed = '1'))",
+                        _connection))
+                {
+                    var da = new SqlDataAdapter(command);
+                    var table = new DataTable();
+                    da.Fill(table);
+                    dataGridView2.DataSource = new BindingSource(table, null);
+                }
             }
+
             //Calculate GPA and credit hours, display it under table
             _totalGradePoint = 0;
             _creditHours = 0;
-            for (int i = 0; i < dataGridView1.RowCount; i++)
+            for (var i = 0; i < dataGridView1.RowCount; i++)
             {
-                _totalGradePoint = _totalGradePoint + (double.Parse(dataGridView1.Rows[i].Cells[1].Value.ToString()) * int.Parse(dataGridView1.Rows[i].Cells[2].Value.ToString()));
+                _totalGradePoint = _totalGradePoint + double.Parse(dataGridView1.Rows[i].Cells[1].Value.ToString()) *
+                                   int.Parse(dataGridView1.Rows[i].Cells[2].Value.ToString());
                 _creditHours = _creditHours + int.Parse(dataGridView1.Rows[i].Cells[2].Value.ToString());
             }
 
             _gpa = _totalGradePoint / _creditHours;
-            label1.Text = "Average GPA: " + Math.Round(_gpa,2);
+            label1.Text = "Average GPA: " + Math.Round(_gpa, 2);
             label2.Text = "Credit Hours: " + _creditHours;
-
         }
-	//Dialog to complete class, dialog simply asks what grade the user recieved, CompleteClass form then calls the completeClass method
-        private void AddDialogButton_Click(object sender, EventArgs e) //Prompts user to add class from available to taken
+
+        //Dialog to complete class, dialog simply asks what grade the user recieved, CompleteClass form then calls the completeClass method
+        private void
+            AddDialogButton_Click(object sender, EventArgs e) //Prompts user to add class from available to taken
         {
             try
             {
@@ -123,11 +125,12 @@ namespace SQLTest
                     {
                         Owner = this, StartPosition = FormStartPosition.Manual
                     };
-                    form.Location = new Point(this.Location.X + (this.Width - form.Width) / 2, this.Location.Y + (this.Height - form.Height) / 2);
+                    form.Location = new Point(Location.X + (Width - form.Width) / 2,
+                        Location.Y + (Height - form.Height) / 2);
                     form.Show(this);
                 }
 
-                this.Enabled = false;
+                Enabled = false;
             }
             catch (NullReferenceException)
             {
@@ -136,21 +139,23 @@ namespace SQLTest
             }
         }
 
-        public void CompleteClass(double grade, string className) //Completes class with given name and assigns given grade
+        public void
+            CompleteClass(double grade, string className) //Completes class with given name and assigns given grade
         {
             using (_connection)
             {
                 _connection.ConnectionString = ConnectionString;
                 _connection.Open();
-                using (SqlCommand updateCommand = new SqlCommand("UPDATE ClassTable SET GradePoint = '" + grade + "', Completed = '1' WHERE Classname = '"+ className +"'", _connection))
+                using (var updateCommand =
+                    new SqlCommand(
+                        "UPDATE ClassTable SET GradePoint = '" + grade + "', Completed = '1' WHERE Classname = '" +
+                        className + "'", _connection))
                 {
                     updateCommand.ExecuteNonQuery();
                 }
-
-
             }
 
-            this.Enabled = true;
+            Enabled = true;
         }
 
         private void RemoveButton_Click(object sender, EventArgs e) //Removes class from taken grid to available grid
@@ -159,16 +164,18 @@ namespace SQLTest
             {
                 _connection.ConnectionString = ConnectionString;
                 _connection.Open();
-                using (SqlCommand command =
-                        new SqlCommand("UPDATE ClassTable SET GradePoint = NULL, Completed = '0' WHERE ClassName = @0", _connection))
+                using (var command =
+                    new SqlCommand("UPDATE ClassTable SET GradePoint = NULL, Completed = '0' WHERE ClassName = @0",
+                        _connection))
+                {
+                    if (dataGridView1.CurrentRow != null)
                     {
-                        if (dataGridView1.CurrentRow != null)
-                        {
-                            command.Parameters.Add(new SqlParameter("@0", dataGridView1.CurrentRow.Cells[0].Value));
-                            command.ExecuteNonQuery();
-                        }
+                        command.Parameters.Add(new SqlParameter("@0", dataGridView1.CurrentRow.Cells[0].Value));
+                        command.ExecuteNonQuery();
                     }
+                }
             }
+
             UpdateTable();
         }
 
@@ -197,6 +204,7 @@ namespace SQLTest
                                 words.Add(brokenLine);
                             }
                         }
+
                         // insert all classes into fresh table, using parameters to avoid injection
                         using (_connection)
                         {
@@ -209,14 +217,20 @@ namespace SQLTest
                             {
                                 deleteCommand.ExecuteNonQuery();
                             }
+
                             foreach (var t in words)
                             {
                                 var preReq = "null";
                                 if (t.Length == 3)
                                     preReq = t[2];
                                 if (t[0].Length >= 21 || preReq.Length >= 21 || int.Parse(t[1]) <= 0) continue;
-                                var insertCommand = preReq.Equals("null") ? new SqlCommand("INSERT INTO ClassTable (ClassName, CreditHours, Completed, PreReq) VALUES (@0, @1,'0', null)", _connection) 
-                                    : new SqlCommand("INSERT INTO ClassTable (ClassName, CreditHours, Completed, PreReq) VALUES (@0, @1,'0', @2)", _connection);
+                                var insertCommand = preReq.Equals("null")
+                                    ? new SqlCommand(
+                                        "INSERT INTO ClassTable (ClassName, CreditHours, Completed, PreReq) VALUES (@0, @1,'0', null)",
+                                        _connection)
+                                    : new SqlCommand(
+                                        "INSERT INTO ClassTable (ClassName, CreditHours, Completed, PreReq) VALUES (@0, @1,'0', @2)",
+                                        _connection);
                                 using (insertCommand)
                                 {
                                     insertCommand.Parameters.Add(new SqlParameter("@0", t[0]));
@@ -225,11 +239,10 @@ namespace SQLTest
                                     insertCommand.ExecuteNonQuery();
                                 }
                             }
-                            
                         }
-
                     }
                 }
+
                 UpdateTable();
             }
             catch (Exception f)
@@ -239,12 +252,13 @@ namespace SQLTest
             }
         }
 
-	//Open unavailable class form
+        //Open unavailable class form
         private void UnavailableButton_Click(object sender, EventArgs e) //List classes not available to take
         {
             if (_unavailableForm.Created) _unavailableForm.Close();
             _unavailableForm = new UnavailableClasses(this) {Owner = this, StartPosition = FormStartPosition.Manual};
-            _unavailableForm.Location = new Point(this.Location.X + (this.Width - _unavailableForm.Width) / 2, this.Location.Y + (this.Height - _unavailableForm.Height) / 2);
+            _unavailableForm.Location = new Point(Location.X + (Width - _unavailableForm.Width) / 2,
+                Location.Y + (Height - _unavailableForm.Height) / 2);
             _unavailableForm.Show(this);
         }
     }
