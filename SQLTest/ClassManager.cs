@@ -19,8 +19,8 @@ namespace SQLTest
         private double _totalGradePoint;
         private int _creditHours;
         private double _gpa;
-	    //Sql Connection Variable
-	    private readonly SqlConnection _connection;
+	//Sql Connection Variable
+	private readonly SqlConnection _connection;
 
         private string ConnectionString = @"Data Source=localhost;Initial Catalog=master;Integrated Security=True";
 	    //Form that shows classes prereqs haven't been met for
